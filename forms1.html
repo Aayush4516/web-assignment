@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .pass {
+      background-color: #b3ffb3;
+    }
+
+    .fail {
+      background-color: #ff9999;
+    }
+
+    .edit-input {
+      border: none;
+      background-color: transparent;
+    }
+
+    .edit-input:focus {
+      outline: none;
+    }
+
+    .edit-button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Student List</h1>
+  <table id="student-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email Address</th>
+        <th>Phone Number</th>
+        <th>Percentage</th>
+        <th>Hobbies</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="student-table-body"></tbody>
+  </table>
+  <button id="add-new-button">Add New</button>
+
+  <div id="add-new-form" style="display: none;">
+    <h2>Add New Student</h2>
+    <form id="student-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required><br>
+
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" required><br>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" required><br>
+
+      <label for="percentage">Percentage:</label>
+      <input type="number" id="percentage" required><br>
+
+      <label for="hobbies">Hobbies (one per line):</label>
+      <textarea id="hobbies" required></textarea><br>
+
+      <button type="submit">Save</button>
+      <button type="button" id="cancel-button">Cancel</button>
+    </form>
+  </div>
+
+  <script src="students.js"></script>
+  <script>
+    // JSON array of students
+    var students = [
+      {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "1234567890",
+        "percentage": 75,
+        "hobbies": ["Reading", "Painting"]
+      },
+      // Add more students here...
+    ];
+
+    // Function to display students in the table
+    function displayStudents() {
+      var tableBody = document.getElementById('student-table-body');
+      tableBody.innerHTML = '';
+
+      students.forEach(function(student, index) {
+        var row = tableBody.insertRow();
+
+        var nameCell = row.insertCell();
+        nameCell.textContent = student.name;
+        nameCell.classList.add("edit-input")
+        nameCell.addEventListener('dblclick', function() {
+          editStudent(index);
+        });
+        var emailCell = row.insertCell();
+        emailCell.textContent = student.email;
+        emailCell.classList.add('edit-input');
+        emailCell.addEventListener('dblclick', function() {
+          editStudent(index);
+        });
+       
+        var phoneCell = row.insertCell();
+        phoneCell.textContent = student.phone;
+        phoneCell.classList.add('edit-input');
+        phoneCell.addEventListener('dblclick', function() {
+          editStudent(index);
+        });
+
+        var percentageCell = row.insertCell();
+        percentageCell.textContent = student.percentage;
+        percentageCell.classList.add('edit-input');
+        percentageCell.addEventListener('dblclick', function() {
+          editStudent(index);
+        });
+        
+        var hobbiesCell = row.insertCell();
+        hobbiesCell.textContent = student.hobbies.join(', ');
+        hobbiesCell.classList.add('edit-input');
+        hobbiesCell.addEventListener('dblclick', function() {
+          editStudent(index);
+        });
+
+        var statusCell = row.insertCell();
+        statusCell.textContent =student.percentage > 40 ? 'PASS' : 'FAIL';
+
+
+        if (student.percentage > 40) {
+          row.classList.add('pass');
+        } else {
+          row.classList.add('fail');
+        }
+      });
+    }
+
+    // Function to open the add new form
+    function openAddNewForm() {
+      document.getElementById('add-new-form').style.display = 'block';
+      document.getElementById('add-new-button').style.display = 'none';
+    }
+
+    // Function to close the add new form
+    function closeAddNewForm() {
+      document.getElementById('add-new-form').style.display = 'none';
+      document.getElementById('add-new-button').style.display = 'block';
+      document.getElementById('student-form').reset();
+    }
+
+    // Function to validate the form data
+    function validateForm() {
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
+      var phone = document.getElementById('phone').value;
+      var percentage = document.getElementById('percentage').value;
+      var hobbies = document.getElementById('hobbies').value;
+
+      // Validate name, email, phone, percentage, and hobbies
+      // You can add your own validation logic here
+
+      // Example validations:
+      if (name.trim() === '') {
+        alert('Please enter a name.');
+        return false;
+      }
+
+      if (email.trim() === '') {
+        alert('Please enter an email address.');
+        return false;
+      }
+
+      // Validate email using regular expression
+      var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alert('Please enter a valid email address.');
+        return false;
+      }
+
+      if (phone.trim() === '') {
+        alert('Please enter a phone number.');
+        return false;
+      }
+
+      // Validate phone using regular expression
+      var phonePattern = /^\d{10}$/;
+      if (!phonePattern.test(phone)) {
+        alert('Please enter a 10-digit phone number.');
+        return false;
+      }
+
+      if (percentage.trim() === '') {
+        alert('Please enter a percentage.');
+        return false;
+      }
+
+      if (isNaN(percentage)) {
+        alert('Please enter a valid number for percentage.');
+        return false;
+      }
+
+      if (parseFloat(percentage) < 0 || parseFloat(percentage) > 100) {
+        alert('Please enter a percentage between 0 and 100.');
+        return false;
+      }
+
+      if (hobbies.trim() === '') {
+        alert('Please enter at least one hobby.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Function to add a new student
+    function addStudent() {
+      if (!validateForm()) {
+        return;
+      }
+
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
+      var phone = document.getElementById('phone').value;
+      var percentage = parseFloat(document.getElementById('percentage').value);
+      var hobbies = document.getElementById('hobbies').value.split('\n').filter(function(hobby) {
+        return hobby.trim() !== '';
+      });
+
+      var student = {
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "percentage": percentage,
+        "hobbies": hobbies
+      };
+
+      students.push(student);
+      displayStudents();
+      closeAddNewForm();
+    }
+
+    // Function to edit an existing student
+    function editStudent(index) {
+      var row = document.getElementById('student-table-body').children[index];
+      var cells = row.getElementsByTagName('td');
+
+      for (var i = 0; i < cells.length - 1; i++) {
+        var text = cells[i].textContent;
+        cells[i].innerHTML = '<input type="text" value="' + text + '">';
+      }
+
+      var saveButton = document.createElement('button');
+      saveButton.textContent = 'Save';
+      saveButton.addEventListener('click', function() {
+          saveEditedStudent(index);
+        });
+
+      cells[cells.length - 1].innerHTML = '';
+      cells[cells.length - 1].appendChild(saveButton);
+    }
+
+    // Function to save the edited student details
+    function saveEditedStudent(index) {
+      var row = document.getElementById('student-table-body').children[index];
+      var cells = row.getElementsByTagName('td');
+
+      var name = cells[0].getElementsByTagName('input')[0].value;
+      var email = cells[1].getElementsByTagName('input')[0].value;
+      var phone = cells[2].getElementsByTagName('input')[0].value;
+      var percentage = parseFloat(cells[3].getElementsByTagName('input')[0].value);
+      var hobbies = cells[4].getElementsByTagName('input')[0].value.split('\n').filter(function(hobby) {
+        return hobby.trim() !== '';
+      });
+      
+      students[index].name = name;
+      students[index].email = email;
+      students[index].phone = phone;
+      students[index].percentage = percentage;
+      students[index].hobbies = hobbies;
+
+      displayStudents();
+
+    }
+
+    // Display initial students
+    displayStudents();
+
+    // Add event listeners
+    document.getElementById('add-new-button').addEventListener('click', openAddNewForm);
+    document.getElementById('cancel-button').addEventListener('click', closeAddNewForm);
+    document.getElementById('student-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      addStudent();
+    });
+  </script>
+</body>
+</html>
